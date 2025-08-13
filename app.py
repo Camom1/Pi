@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).parent.resolve()
 TEMPLATES_DIR = BASE_DIR / "templates"
 
 # ===== OpenAI setup (optional for now) =====
-OPENAI_API_KEY = "sk-proj-Rmugg4wxH2WeBoIVFUZLT3BlbkFJtllecELQncBwnGnMLiKQ"
+OPENAI_API_KEY = "APIKEY"
 USE_NEW_SDK = False
 client = None
 try:
