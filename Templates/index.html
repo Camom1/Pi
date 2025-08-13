@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Pathwise · Career Roadmap</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    /* Ultra-safe, high-contrast, single column */
+    html, body { margin:0; padding:0; background:#ffffff; color:#111111; }
+    body { font: 18px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    .wrap { max-width: 1000px; width: 96vw; margin: 24px auto; padding: 0 12px; }
+    h1 { margin: 0 0 12px; font-size: 28px; }
+    h2 { margin: 0 0 10px; font-size: 20px; }
+    .card { background:#f7f7f9; border:1px solid #dddddd; border-radius:12px; padding:16px; margin-bottom:16px; }
+    label { display:block; font-weight:600; margin:12px 0 6px; }
+    input[type="text"], textarea {
+      width: 100%; padding: 10px 12px; border:1px solid #cfcfcf; border-radius:8px; font-size:16px; background:#ffffff; color:#111111;
+    }
+    textarea { min-height:110px; resize: vertical; }
+    .btn { display:inline-block; margin-top:12px; padding:12px 16px; background:#111111; color:#ffffff; border:0; border-radius:10px; cursor:pointer; font-weight:700; }
+    .muted { color:#666; font-size: 0.95rem; }
+    .err { color:#b00020; font-weight:600; margin-top:10px; }
+    pre { white-space: pre-wrap; word-wrap: break-word; background:#ffffff; border:1px solid #dddddd; border-radius:8px; padding:12px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Pathwise</h1>
+    <div class="muted" style="margin-bottom:12px;">Generate a tailored 5-step career roadmap</div>
+
+    <div class="card">
+      <h2>Candidate Survey</h2>
+      <form method="POST">
+        <label for="name">Full name</label>
+        <input id="name" name="name" type="text" placeholder="e.g., Camilo Moreno" required />
+
+        <label for="ideal_role">Ideal role</label>
+        <input id="ideal_role" name="ideal_role" type="text" placeholder="e.g., Machine Learning Engineer" required />
+
+        <label for="work_experience">Work experience (brief)</label>
+        <textarea id="work_experience" name="work_experience" placeholder="Years, relevant projects, industries…"></textarea>
+
+        <label for="education">Education</label>
+        <textarea id="education" name="education" placeholder="Degrees, programs, key courses…"></textarea>
+
+        <label for="tech_skills">Technical skills</label>
+        <textarea id="tech_skills" name="tech_skills" placeholder="Languages, frameworks, tools…"></textarea>
+
+        <label for="soft_skills">Soft skills</label>
+        <textarea id="soft_skills" name="soft_skills" placeholder="Communication, leadership…"></textarea>
+
+        <label for="languages">Languages</label>
+        <textarea id="languages" name="languages" placeholder="e.g., Spanish (native), English (C1)"></textarea>
+
+        <label for="preferences">Availability & job preferences</label>
+        <textarea id="preferences" name="preferences" placeholder="Location, remote preference, schedule, sector…"></textarea>
+
+        <button class="btn" type="submit">Generate roadmap</button>
+      </form>
+      {% if error %}<div class="err">Error: {{ error }}</div>{% endif %}
+    </div>
+
+    <div class="card">
+      <h2>Roadmap Output</h2>
+      {% if result %}
+        <pre>{{ result }}</pre>
+      {% else %}
+        <div class="muted">Fill the survey above and click “Generate roadmap”.</div>
+      {% endif %}
+    </div>
+
+    {% if prompt %}
+    <div class="card">
+      <h2>Prompt Used (debug)</h2>
+      <pre>{{ prompt }}</pre>
+    </div>
+    {% endif %}
+  </div>
+</body>
+</html>
+
+
+
+
+
+
