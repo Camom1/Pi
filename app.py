@@ -9,53 +9,35 @@ TEMPLATES_DIR = BASE_DIR / "templates"
 
 # ===== OpenAI setup (optional for now) =====
 OPENAI_API_KEY = "APIKEY"
-USE_NEW_SDK = False
-client = None
+if not OPENAI_API_KEY:
+    print("⚠️ WARNING: OPENAI_API_KEY no está configurada")
+
+# Intenta usar el nuevo SDK, si no el viejo
 try:
-    from openai import OpenAI  # new SDK
+    from openai import OpenAI
     client = OpenAI(api_key=OPENAI_API_KEY)
     USE_NEW_SDK = True
-except Exception:
-    try:
-        import openai  # legacy SDK
-        if OPENAI_API_KEY:
-            openai.api_key = OPENAI_API_KEY
-    except Exception:
-        openai = None  # type: ignore
-
+except ImportError:
+    import openai
+    openai.api_key = OPENAI_API_KEY
+    client = None
+    USE_NEW_SDK = False
 # ===== Flask app, explicitly bind templates dir =====
 app = Flask(__name__, template_folder=str(TEMPLATES_DIR))
 
-# Helpful diagnostics that work with Flask 3
-print("RUNNING FILE:", __file__)
-print("CWD (os.getcwd()):", os.getcwd())
-print("app.root_path:", app.root_path)
-print("app.template_folder:", app.template_folder)
-print("Expected template path:", TEMPLATES_DIR / "index.html")
-print("Template exists?:", (TEMPLATES_DIR / "index.html").exists())
-
 @app.route("/", methods=["GET", "POST"])
 def index():
-    print("Hitting / route")
-    prompt = None
-    result = None
-    error = None
+    prompt = result = error = None
 
     if request.method == "POST":
-        # Read survey fields from the form
+        # Leer campos del formulario
         name        = (request.form.get("name") or "").strip()
         ideal_role  = (request.form.get("ideal_role") or "").strip()
-        work_exp    = (request.form.get("work_experience") or "").strip()
-        education   = (request.form.get("education") or "").strip()
-        tech_skills = (request.form.get("tech_skills") or "").strip()
-        soft_skills = (request.form.get("soft_skills") or "").strip()
-        languages   = (request.form.get("languages") or "").strip()
-        preferences = (request.form.get("preferences") or "").strip()
 
-        if not name or not ideal_role:
+         if not name or not ideal_role:
             error = "Please provide at least your full name and ideal role."
             return render_template("index.html", prompt=prompt, result=result, error=error)
-
+             
         if not OPENAI_API_KEY:
             error = "Missing OPENAI_API_KEY environment variable."
             return render_template("index.html", prompt=prompt, result=result, error=error)
@@ -65,12 +47,13 @@ You are Pathwise, an expert career planner. Using the candidate info below, prod
 
 Candidate:
 - Name: {name}
-- Work Experience: {work_exp or "N/A"}
-- Education: {education or "N/A"}
-- Technical Skills: {tech_skills or "N/A"}
-- Soft Skills: {soft_skills or "N/A"}
-- Languages: {languages or "N/A"}
-- Availability & Preferences: {preferences or "N/A"}
+- Work Experience: {(request.form.get("work_experience") or "N/A").strip()}
+- Education: {(request.form.get("education") or "N/A").strip()}
+- Technical Skills: {(request.form.get("tech_skills") or "N/A").strip()}
+- Soft Skills: {(request.form.get("soft_skills") or "N/A").strip()}
+- Languages: {(request.form.get("languages") or "N/A").strip()}
+- Availability & Preferences: {(request.form.get("preferences") or "N/A").strip()}
+""".strip()
 
 Instructions:
 - Output 5 sequential roles (Step 1 → Step 5) with:
@@ -91,9 +74,7 @@ Instructions:
                     temperature=0.4,
                 )
                 result = resp.choices[0].message.content.strip()
-            else:
-                if "openai" not in globals() or openai is None:
-                    raise RuntimeError("OpenAI SDK not installed. Run: pip install openai")
+             else:
                 resp = openai.ChatCompletion.create(
                     model="gpt-4",
                     messages=[{"role": "system", "content": prompt}],
@@ -107,8 +88,7 @@ Instructions:
     return render_template("index.html", prompt=prompt, result=result, error=error)
 
 if __name__ == "__main__":
-    # Fixed host/port; disable reloader so you always hit THIS file
-    app.run(host="127.0.0.1", port=5000, debug=True, use_reloader=False)
+    app.run(host="127.0.0.1", port=5000, debug=True)
 
 
 
