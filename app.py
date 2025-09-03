@@ -34,7 +34,7 @@ def index():
         name        = (request.form.get("name") or "").strip()
         ideal_role  = (request.form.get("ideal_role") or "").strip()
 
-         if not name or not ideal_role:
+        if not name or not ideal_role:
             error = "Please provide at least your full name and ideal role."
             return render_template("index.html", prompt=prompt, result=result, error=error)
              
@@ -53,11 +53,10 @@ Candidate:
 - Soft Skills: {(request.form.get("soft_skills") or "N/A").strip()}
 - Languages: {(request.form.get("languages") or "N/A").strip()}
 - Availability & Preferences: {(request.form.get("preferences") or "N/A").strip()}
-""".strip()
 
 Instructions:
 - Output 5 sequential roles (Step 1 → Step 5) with:
-  • Brief role description (2–3 lines)
+  • Brief role description (2 or 3 lines)
   • Key skills/experience required
   • Recommended courses/certifications (concrete, recognizable options)
   • Why this step moves the candidate closer to the ideal role
@@ -74,7 +73,7 @@ Instructions:
                     temperature=0.4,
                 )
                 result = resp.choices[0].message.content.strip()
-             else:
+            else:
                 resp = openai.ChatCompletion.create(
                     model="gpt-4",
                     messages=[{"role": "system", "content": prompt}],
